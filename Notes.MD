@@ -33,3 +33,16 @@ Debugging trick: если локатор «явно правильный» но 
 скопируй строку в hex-viewer или в консоли браузера в `unescape(...)`,
 или просто перенабери на английской раскладке.
 
+Запиши:
+
+
+## button vs link — визуально кнопка ≠ HTML <button>
+В browser-based UI элементы могут выглядеть как кнопки но быть <a> ссылками.
+Всегда проверять в DevTools какой тег и какой role.
+- <button> → getByRole('button')
+- <a href> → getByRole('link')
+- На saucedemo все пункты burger menu (Logout, All Items, About) — это <a>.
+
+Senior takeaway: на собесе если спрашивают «как тестировать кнопку» —
+уточни «в HTML это <button> или <a> styled как кнопка?». Это показывает
+понимание разницы visual ≠ semantic.
