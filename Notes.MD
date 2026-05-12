@@ -46,3 +46,76 @@ Debugging trick: если локатор «явно правильный» но 
 Senior takeaway: на собесе если спрашивают «как тестировать кнопку» —
 уточни «в HTML это <button> или <a> styled как кнопка?». Это показывает
 понимание разницы visual ≠ semantic.
+
+fixture scope (test, worker) - тест - это настройки для индивидуального теста - а воркер - это настройки для воркера который может гонять кучу тестов
+
+test.extend() - нужен для того чтобы добавлять в тест фикстуры
+
+POM bad - когда проекты довольно маленькие и легкие, но за счет POM добавляется излишняя сложность
+
+«POM isn't about clean code aesthetics — it's about the cost curve. Without POM, maintenance cost scales linearly with the number of tests touching a UI element. With POM, it's constant. On a 500-test suite, that's the difference between a quick PR and a week-long refactor every time UI changes.»
+
+
+Гибрид (то что обычно делают на практике)
+Самое частое в реальных кодбейзах:
+
+Локаторы для actions (input fields, buttons, что используется только в методах) → private
+Локаторы которые тесту нужны для assertions (errorMessage, cartBadge, productPrice) → public readonly
+Действия → async методы класса
+Сложные queries (например getProductPrices()) → query-методы возвращающие данные
+Это даёт разумный баланс: encapsulation там где важно, удобство там где осмысленно.
+
+## ESLint: no-floating-promises
+Любая async функция вызванная без await — ошибка компиляции.
+Catches one of the most common bugs в TS async коде.
+В Playwright особенно критично — POM методы async, забыть await = race condition.
+@typescript-eslint/no-floating-promises правило.
+
+## Когда CSS-селектор оправдан
+- DOM не имеет semantic role/role-name для контейнера (legacy code)
+- Нужен scoping которого нельзя получить через role/text
+- Test ID можно было бы попросить добавить (data-test=...), но в нашем control'е нет
+- Никогда — для elements с есть getByRole/getByLabel/getByText альтернативы
+
+## API design: specific vs generic methods
+Когда есть tension между read-easy именованием и слабым coupling'ом —
+не выбирай одно, дай оба варианта:
+- xxxByName(name)  → coupling намеренный, тест про specifics
+- xxxByIndex(index)  → тесту всё равно, нужна гибкость
+
+Это:
+1. Самодокументирующий — тест явно показывает интенцию
+2. Refactor-safe — переименовали товар, упадут только тесты по имени
+3. Single Responsibility — каждый метод имеет одну ответственность
+
+Запиши:
+
+
+## POM и assertions — нюансированное правило
+Не "POM никогда не ассертит", а:
+- ❌ POM НЕ должен ассертить бизнес-исходы (counter после add, success после login)
+  → это интенция теста, должна жить в тесте
+- ✅ POM МОЖЕТ ассертить readiness/loading (expectLoaded, waitForReady)
+  → это часть абстракции страницы, тесты не должны её знать
+  → решает DRY проблему когда каждый тест начинается с одного и того же check
+
+Naming: 
+- expectXxx() / assertXxx() — методы, бросающие на assertion fail
+- isXxx() / getXxx() — query-методы, возвращающие данные
+- doXxx() / xxxAction() — actions без assert (если нужно подчеркну
+
+## Debug trick: hover на переменную в IDE
+TypeScript показывает inferred тип под курсором.
+Если ожидаешь number[] а видишь Promise<number[]> — пропущен await.
+Самый быстрый способ отловить missing await без запуска тестов.
+
+## Array.sort() мутирует — defensive copy
+.sort() / .reverse() / .splice() меняют массив in-place.
+Если хочешь сохранить original — копируй: [...arr].sort() или Array.from(arr).sort().
+Особенно критично в тестах: если original и sorted ссылаются на один массив,
+assertion всегда true даже если сортировка не сработала.
+
+## ESLint expect-expect и POM
+Когда POM методы делают assertions внутри — Playwright plugin не видит.
+Решение: настроить assertFunctionNames с твоей naming convention (expect*).
+Это типовая настройка на каждом проекте с POM.
