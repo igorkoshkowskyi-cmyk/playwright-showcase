@@ -6,27 +6,29 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   {
-languageOptions: {
-  parserOptions: {
-    projectService: {
-      allowDefaultProject: ['eslint.config.js'],
+    languageOptions: {
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ['eslint.config.js'],
+        },
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
-    tsconfigRootDir: import.meta.dirname,
-  },
-},
   },
   {
-    files: ['tests/**/*.ts', 'pages/**/*.ts'],
+    files: ['tests/**/*.ts', 'pages/**/*.ts', 'components/**/*.ts', 'fixtures/**/*.ts'],
     ...playwright.configs['flat/recommended'],
+    rules: {
+      ...playwright.configs['flat/recommended'].rules,
+      'playwright/expect-expect': ['warn', {
+        assertFunctionNames: ['expect', 'expectLoaded', 'expect*']
+      }]
+    },
   },
   {
     rules: {
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
-      ...playwright.configs['flat/recommended'].rules,
-        'playwright/expect-expect': ['warn', { 
-            assertFunctionNames: ['expect', 'expectLoaded', 'expect*']
-        }]
     },
   }
 );

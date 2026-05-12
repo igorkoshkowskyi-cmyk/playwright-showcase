@@ -119,3 +119,9 @@ assertion всегда true даже если сортировка не сраб
 Когда POM методы делают assertions внутри — Playwright plugin не видит.
 Решение: настроить assertFunctionNames с твоей naming convention (expect*).
 Это типовая настройка на каждом проекте с POM.
+
+## Fixture как guarantor состояния
+Fixture может (и должна) проверять что setup действительно успешен.
+В authenticatedPage делаем expectLoaded() после login — fixture не передаст page
+тесту, если login провалился. Тест падает с понятной ошибкой "fixture setup failed",
+а не на загадочной строке внутри теста.

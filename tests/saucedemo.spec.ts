@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { SideMenu } from "../components/SideMenu";
+import { expect, test } from "../fixtures";
 import { InventoryPage } from "../pages/InventoryPage";
 import { LoginPage } from "../pages/LoginPage";
 
@@ -32,20 +32,7 @@ test.describe('Saucedemo - Login', () => {
 })
 
 test.describe('Saucedemo - Inventory & Cart', () => {
-    test.beforeEach(async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        await loginPage.goto();
-        await loginPage.login(LOGIN, PASS);
-
-        const inventoryPage = new InventoryPage(page);
-
-        // check inventory page is loaded
-        await inventoryPage.expectLoaded();
-    });
-
-    test('add product to cart updates cart counter', async ({ page}) => {
-        const inventoryPage = new InventoryPage(page);
-
+    test('add product to cart updates cart counter', async ({ inventoryPage}) => {
         await inventoryPage.addProductByIndex(1);
         await expect (inventoryPage.cartBadge).toHaveText('1');
 
@@ -53,9 +40,7 @@ test.describe('Saucedemo - Inventory & Cart', () => {
         await expect (inventoryPage.cartBadge).toHaveText('2');
     });
 
-    test('sort by price low-to-high shows cheapest first', async ({page})=> {
-        const inventoryPage = new InventoryPage(page);
-
+    test('sort by price low-to-high shows cheapest first', async ({inventoryPage})=> {
         await inventoryPage.sortBy('lohi');
         const prices = await inventoryPage.getProductPrices();
         const sortedPrices= [...prices].sort((a,b) => a - b);
@@ -65,14 +50,14 @@ test.describe('Saucedemo - Inventory & Cart', () => {
 
     });
 
-    test('logout returns user to login page', async ({page})=> {
-        const sideMenu = new SideMenu(page);
+    test('logout returns user to login page', async ({authenticatedPage})=> {
+        const sideMenu = new SideMenu(authenticatedPage);
 
         await sideMenu.openMenu();
         await sideMenu.logoutAction();
 
         //check that login page opened
-        const loginPage = new LoginPage(page);
+        const loginPage = new LoginPage(authenticatedPage);
         await loginPage.expectLoaded();
     });
 })
