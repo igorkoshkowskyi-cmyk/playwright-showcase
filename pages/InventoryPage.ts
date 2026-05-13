@@ -21,6 +21,11 @@ export class InventoryPage {
         this.addToCartButton = page.getByRole('button', {name: 'Add to cart'});
     }
 
+    // open inventory page
+    async goto() {
+        await this.page.goto('/inventory.html');
+    }
+
     //Check that page loaded
     async expectLoaded() {
         await expect(this.page).toHaveURL(/\/inventory\.html$/);

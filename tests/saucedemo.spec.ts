@@ -7,6 +7,8 @@ const PASS = 'secret_sauce';
 const LOGIN = 'standard_user';
 
 test.describe('Saucedemo - Login', () => {
+    test.use({storageState: {cookies: [], origins: []}});
+
     test('successful login redirect to inventory', async ({ page}) => {
         
         const loginPage = new LoginPage(page);
@@ -47,7 +49,6 @@ test.describe('Saucedemo - Inventory & Cart', () => {
 
         //check that prices sorted
         expect(prices).toEqual(sortedPrices);
-
     });
 
     test('logout returns user to login page', async ({authenticatedPage})=> {
