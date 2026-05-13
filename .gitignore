@@ -8,3 +8,10 @@ node_modules/
 /playwright/.auth/
 
 playwright/.auth
+
+# Personal learning docs (not for sharing)
+LEARNING_PLAN.md
+Notes.MD
+RECALL.md
+WORK_LOG.md
+CV.md
