@@ -7,22 +7,36 @@ E2E test automation showcase project demonstrating Playwright + TypeScript skill
 
 ## Stack
 
-- Playwright + TypeScript
+- Playwright + TypeScript (strict mode)
 - Page Object Model
-- Fixtures + storage state
-- Sharded CI on GitHub Actions
+- Composed fixtures (authenticated state shared via storageState)
+- ESLint flat config (no-floating-promises, no-misused-promises)
+- Prettier
+
+## CI/CD
+
+- Sharded parallel execution (4 runners via matrix)
+- Containerized via official Playwright Docker image
+- Allure reporter with history trends
+- Auto-deployed report to GitHub Pages on main
 
 ## What's covered
 
-- Authentication via shared storage state
-- POM with thin BasePage contract
-- Component objects (SideMenu)
+- Authentication flow (storage state pattern)
+- Inventory page (sorting, filtering, cart operations)
 - ...
 
 ## Run locally
 
 \`\`\`bash
-npm install
+npm ci
 npx playwright install
 npx playwright test
 \`\`\`
+
+## Project structure
+
+- `tests/` — test specs
+- `pages/` — Page Object Model classes
+- `components/` — reusable UI components (SideMenu, etc.)
+- `fixtures/` — composed Playwright fixtures
