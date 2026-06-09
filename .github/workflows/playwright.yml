@@ -68,16 +68,19 @@ jobs:
       - name: Restore Allure history
         uses: actions/cache/restore@v4
         with:
-          path: allure-history
+          path: allure-report/history
           key: allure-history-${{ github.run_id }}
           restore-keys: |
             allure-history-
 
       - name: Inject history into results
         run: |
-          if [ -d allure-history ]; then
+          if [ -d allure-report/history ]; then
             mkdir -p allure-artifacts/history
-            cp -r allure-history/* allure-artifacts/history/
+            cp -r allure-report/history/* allure-artifacts/history/
+            echo "✓ history injected, files: $(ls allure-report/history | wc -l)"
+          else
+            echo "no previous history (first run or cache miss)"
           fi
       - name: Generate Allure report
         run: npx allure generate -o allure-report allure-artifacts
