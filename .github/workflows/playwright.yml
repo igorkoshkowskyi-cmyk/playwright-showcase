@@ -26,9 +26,41 @@ jobs:
         run: npm ci
       - name: Run Playwright tests
         run: npx playwright test --shard=${{matrix.shard}}/4
-      - uses: actions/upload-artifact@v4
+      - name: Upload Playwright HTML report
+        uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{matrix.shard}}
+          name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 7
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: allure-results-${{ matrix.shard }}
+          path: allure-results/
+          retention-days: 7
+
+  report:
+    needs: test
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Download all allure-results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: allure-artifacts/
+          merge-multiple: true
+      - name: Generate Allure report
+        run: npx allure generate -o allure-report allure-artifacts
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/
+          retention-days: 30
