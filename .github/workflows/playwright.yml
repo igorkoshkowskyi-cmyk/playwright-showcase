@@ -50,12 +50,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: "npm"
+      - name: Install dependencies # ← это добавляешь
+        run: npm ci
       - name: Download all allure-results
         uses: actions/download-artifact@v4
         with:
           pattern: allure-results-*
           path: allure-artifacts/
           merge-multiple: true
+      - name: Debug — list downloaded artifacts # ← и это
+        run: |
+          echo "=== allure-artifacts content ==="
+          ls -la allure-artifacts/ || echo "FOLDER EMPTY"
+          echo "=== file count ==="
+          find allure-artifacts/ -type f | wc -l
       - name: Generate Allure report
         run: npx allure generate -o allure-report allure-artifacts
       - name: Upload Allure report
