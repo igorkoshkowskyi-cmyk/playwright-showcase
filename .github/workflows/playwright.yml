@@ -83,7 +83,7 @@ jobs:
             echo "no previous history (first run or cache miss)"
           fi
       - name: Generate Allure report
-        run: npx allure generate -o allure-report allure-artifacts
+        run: npx allure generate --clean -o allure-report allure-artifacts
 
       - name: Save Allure history
         uses: actions/cache/save@v4
