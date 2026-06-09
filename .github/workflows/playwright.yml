@@ -64,8 +64,30 @@ jobs:
           pattern: allure-results-*
           path: allure-artifacts/
           merge-multiple: true
+
+      - name: Restore Allure history
+        uses: actions/cache/restore@v4
+        with:
+          path: allure-history
+          key: allure-history-${{ github.run_id }}
+          restore-keys: |
+            allure-history-
+
+      - name: Inject history into results
+        run: |
+          if [ -d allure-history ]; then
+            mkdir -p allure-artifacts/history
+            cp -r allure-history/* allure-artifacts/history/
+          fi
       - name: Generate Allure report
         run: npx allure generate -o allure-report allure-artifacts
+
+      - name: Save Allure history
+        uses: actions/cache/save@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: allure-report/history
+          key: allure-history-${{ github.run_id }}
       - name: Upload Allure report
         uses: actions/upload-artifact@v4
         with:
