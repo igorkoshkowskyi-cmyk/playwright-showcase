@@ -1,4 +1,5 @@
 [![Playwright Tests](https://github.com/igorkoshkowskyi-cmyk/playwright-showcase/actions/workflows/playwright.yml/badge.svg)](https://github.com/igorkoshkowskyi-cmyk/playwright-showcase/actions/workflows/playwright.yml)
+[Live Allure Report](https://igorkoshkowskyi-cmyk.github.io/playwright-showcase/)
 
 # Playwright Showcase
 
